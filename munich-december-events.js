@@ -2139,56 +2139,6 @@ var json = {
       "address": "Hauptstraße 25, 82256 Fürstenfeldbruck",
       "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F51326581%2F223235016638%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C60%2C1920%2C960&s=cf6b1f749bf71b454e2433342b721eae",
       "originUrl": "https://www.eventbrite.de/e/51404667745?aff=efbneb"
-    },
-    {
-      "eventName": "DM360° - Certified Digital Marketing Expert, München",
-      "beginDateTimeUtc": "2019-12-02T09:00:00+01:00",
-      "endDateTimeUtc": "2019-12-06T15:00:00+01:00",
-      "country": "DE",
-      "location": "Munich",
-      "address": "München",
-      "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F51364850%2F111338734467%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C0%2C800%2C400&s=0f97c7bfca21801e4e1b87f5b1c10ae3",
-      "originUrl": "https://www.eventbrite.de/e/51450998321?aff=efbneb"
-    },
-    {
-      "eventName": "Die GENERALPROBE in Berlin",
-      "beginDateTimeUtc": "2019-12-02T09:30:00+01:00",
-      "endDateTimeUtc": "2019-12-02T17:00:00+01:00",
-      "country": "DE",
-      "location": "Munich",
-      "address": "Berlin",
-      "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F51033091%2F184770740352%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C0%2C2160%2C1080&s=c41c088f8774fc8439789b6b59718777",
-      "originUrl": "https://www.eventbrite.de/e/51205322498?aff=efbneb"
-    },
-    {
-      "eventName": "Certified ScrumMaster® PLUS (CSM Plus)",
-      "beginDateTimeUtc": "2019-12-02T09:30:00+01:00",
-      "endDateTimeUtc": "2019-12-04T17:00:00+01:00",
-      "country": "DE",
-      "location": "Munich",
-      "address": "Bothestraße 11 Leuchtenbergring, 81675 München",
-      "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F52510140%2F204995841922%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C97%2C1344%2C672&s=93c0274ee4a59154ce90aa26a3815d92",
-      "originUrl": "https://www.eventbrite.de/e/52394420121?aff=efbneb"
-    },
-    {
-      "eventName": "Certified Scrum Product Owner® Plus (CSPO Plus)",
-      "beginDateTimeUtc": "2019-12-09T09:30:00+01:00",
-      "endDateTimeUtc": "2019-12-11T17:00:00+01:00",
-      "country": "DE",
-      "location": "Munich",
-      "address": "Bothestraße 11 Leuchtenbergring, 81675 München",
-      "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F52510232%2F241269693822%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C0%2C800%2C400&s=a1f5636561f6965024db4e2e9d66085f",
-      "originUrl": "https://www.eventbrite.de/e/52394453220?aff=efbneb"
-    },
-    {
-      "eventName": "POWERDAY bei München Dezember",
-      "beginDateTimeUtc": "2019-12-14T13:00:00+01:00",
-      "endDateTimeUtc": "2019-12-14T18:00:00+01:00",
-      "country": "DE",
-      "location": "Munich",
-      "address": "München",
-      "bannerImageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F51760418%2F219125321749%2F1%2Foriginal.jpg?w=1000&auto=compress&rect=0%2C0%2C800%2C400&s=4233993f0dca321564f9ec3a69cfdb13",
-      "originUrl": "https://www.eventbrite.de/e/51752008651?aff=efbneb"
     }
   ]
 }

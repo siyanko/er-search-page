@@ -119,7 +119,18 @@
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
                 eventLink.append("<img src=" + json.events[i].bannerImageUrl + "/>")
                 eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
-                eventLink.append("<p style=\"padding-top: 1em;\">" + json.events[i].beginDateTimeUtc + "</p>")
+
+                var date = new Date(json.events[i].beginDateTimeUtc)
+                
+                var dateHours = date.getHours()
+                var dateHoursStr = "00"
+                if (dateHours > 0){dateHoursStr = dateHours}
+                
+                var dateMinutes = date.getMinutes()
+                var dateMinutesStr = "00"
+                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+                
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " +  dateHoursStr + ":" + dateMinutesStr + "</p>")
 
                 var divEvent = $("<div class=\"event\">")
                 divEvent.append(eventLink)
