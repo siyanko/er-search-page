@@ -18,44 +18,59 @@
             "title title"
             "content content"
             "footer footer";
+            background-color: #FCFCFC;
         }
         header {
             grid-area: header;
-            background-color: darkkhaki;
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-areas: 
-            "logo .";
+            "logo header-title";
         }
         .logo {
             grid-area: logo;
-            padding: 0.5em;
-            padding-left: 2em;
+            padding: 1em;
+            padding-left: 2.5em;
             text-transform: uppercase;
             letter-spacing: 0.5em;
             font-size: 22px;
+            color: #344A37;
+        }
+
+        .header-title{
+            grid-area: header-title;
+            padding: 2em;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-size: 20px;
+            color: #344A37;
+            text-align: right;
+            padding-right: 3.5em;
         }
 
         .title{
+            background-color: #B1E0DB;
+            color: #216773;
             grid-area: title;
-            padding: 1.5em;
+            padding: 1em;
             text-align: center; 
             letter-spacing: 0.2em;
-            font-size: 22px;
+            font-size: 20px;
+            text-transform: uppercase;
         }
         .content{
             grid-area: content;
             display: grid;
             grid-template-columns: 1fr;
+            padding-top: 1em;
         }
 
 /* Evetn Styles */
         .event{
             align-self: start;
             padding: 0.75em;
-            padding-top: 2em;
+            margin-top: 1em;
             transition: transform .2s  ease-in-out;
-            background-color: white;
         }
         .event img{
             width: 100%;
@@ -71,14 +86,11 @@
             text-decoration: none;
             color: black;
         }
-        /* .event:hover{
-            transform: scale(1.1);
-            background-color:whitesmoke;
-        } */
 /* Footer */
         footer {
             grid-area: footer;
-            background-color: goldenrod;
+            color: #FFFFFF;
+            background-color: #6B949C;
             height: 5em;
         }
         @media screen and (min-width: 736px)
@@ -88,7 +100,7 @@
                 grid-template-columns: 5% 1fr 1fr 5%; 
                 grid-template-areas: 
                 "header header header header"
-                ". title title . "
+                "title title title title "
                 ". content content . "
                 "footer footer footer footer";
             }
@@ -103,7 +115,8 @@
 
             .event:hover{
                 transform: scale(1.3);
-                background-color:whitesmoke;
+                background-color: #FFFFFF;
+                padding: 1em;
             }
         }
 
@@ -113,24 +126,24 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $(".title").append("<h2>" + json.events.length + " events </h2>")
+            $(".title").append("<h2>" + json.events.length + " events in December </h2>")
 
-            for (i = 0; i < json.events.length; i++) {
+            for (i = 0; i < 16; i++) {
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
                 eventLink.append("<img src=" + json.events[i].bannerImageUrl + "/>")
                 eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
 
                 var date = new Date(json.events[i].beginDateTimeUtc)
-                
+
                 var dateHours = date.getHours()
                 var dateHoursStr = "00"
-                if (dateHours > 0){dateHoursStr = dateHours}
-                
+                if (dateHours > 0) { dateHoursStr = dateHours }
+
                 var dateMinutes = date.getMinutes()
                 var dateMinutesStr = "00"
                 if (dateMinutes > 0) dateMinutesStr = dateMinutes
-                
-                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " +  dateHoursStr + ":" + dateMinutesStr + "</p>")
+
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
 
                 var divEvent = $("<div class=\"event\">")
                 divEvent.append(eventLink)
@@ -147,9 +160,10 @@
 <body>
     <header>
         <h1 class="logo">Event Ranger</h1>
+        <h2 class="header-title">Munich Events</h2>
     </header>
     <section class="title">
-        <h1>Munich December Events</h1>
+        <!-- <h1>Munich December Events</h1> -->
     </section>
     <section class="content">
     </section>
