@@ -140,13 +140,14 @@
         };
         $(document).ready(function () {
             for (i = 0; i < json.events.length; i++) {
-                // var divEvent = $(".content").append("<div class=\"event\">")
-                var divEvent = $("<div class=\"event\">")
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
                 eventLink.append("<h2>" + json.events[i].name + "</h2>")
                 eventLink.append("<img src=" + json.events[i].imageUrl + "/>")
                 eventLink.append("<p>DATE</p>")
+                
+                var divEvent = $("<div class=\"event\">")
                 divEvent.append(eventLink)
+                
                 $(".content").append(divEvent)
             }
         });
