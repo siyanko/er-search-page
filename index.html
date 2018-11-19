@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Ranger Search Prototype</title>
     <style>
         * {
@@ -10,66 +12,164 @@
         }
         body {
             display: grid;
+            grid-template-columns: 1fr 1fr; 
             grid-template-areas: 
-            ". header ."
-            ". section .";
-            grid-template-rows: 1fr 1fr 1fr;
-            grid-row-gap: 1.5rem;
-            grid-column-gap: 10.5rem;
-            height: 100vh;
+            "header header"
+            "title title"
+            "content content"
+            "footer footer";
         }
-
-        header{
+        header {
+            grid-area: header;
+            background-color: darkkhaki;
             display: grid;
-            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             grid-template-areas: 
             "logo search";
-            grid-area: header;
-            margin-top: 1.5rem;
+        }
+        .logo {
+            grid-area: logo;
+            padding: 0.5em;
+            padding-left: 2em;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            font-size: 22px;
         }
 
-        #logo{
-            grid-area: logo;
-        }
-        #search{
+        .search {
             grid-area: search;
+            text-align:end;
+            padding-right: 5em;
         }
-        section{
+        .title{
+            grid-area: title;
+            padding: 1.5em;
+            text-align: center; 
+            letter-spacing: 0.2em;
+            font-size: 22px;
+        }
+        .content{
+            grid-area: content;
             display: grid;
-            grid-area: section;
+            grid-template-columns: 1fr;
         }
+
+/* Evetn Styles */
+        .event{
+            align-self: end;
+            padding: 0.75em;
+            padding-top: 2em;
+            transition: transform .2s  ease-in-out;
+            background-color: white;
+        }
+        .event img{
+            width: 100%;
+            height: 50%;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+        }
+        .event h2 {
+            font-size: 22px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .event a{
+            text-decoration: none;
+            color: black;
+        }
+        .event:hover{
+            transform: scale(1.1);
+            background-color:whitesmoke;
+        }
+/* Footer */
+        footer {
+            grid-area: footer;
+            background-color: goldenrod;
+            height: 5em;
+        }
+        @media screen and (min-width: 736px)
+        {
+            body {
+                display: grid;
+                grid-template-columns: 5% 1fr 1fr 5%; 
+                grid-template-areas: 
+                "header header header header"
+                ". title title . "
+                ". content content . "
+                "footer footer footer footer";
+            }
+
+            .logo {
+                font-size: 30px;
+            }
+
+            .content{
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+
+            .event:hover{
+                transform: scale(1.3);
+            }
+        }
+
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var json = {
+            "events": [
+                {
+                    "name": "Rave On Snow 2018",
+                    "imageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F43471641%2F252190799145%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=bda7a0baceff77e8cd7993792f42f22d",
+                    "originUrl": "https://www.eventbrite.de/e/rave-on-snow-2018-tickets-45058693766"
+                },
+                {
+                    "name": "Rave On Snow 2018",
+                    "imageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F43471641%2F252190799145%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=bda7a0baceff77e8cd7993792f42f22d",
+                    "originUrl": "https://www.eventbrite.de/e/rave-on-snow-2018-tickets-45058693766"
+                },
+                {
+                    "name": "Rave On Snow 2018",
+                    "imageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F43471641%2F252190799145%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=bda7a0baceff77e8cd7993792f42f22d",
+                    "originUrl": "https://www.eventbrite.de/e/rave-on-snow-2018-tickets-45058693766"
+                },
+                {
+                    "name": "Rave On Snow 2018",
+                    "imageUrl": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F43471641%2F252190799145%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=bda7a0baceff77e8cd7993792f42f22d",
+                    "originUrl": "https://www.eventbrite.de/e/rave-on-snow-2018-tickets-45058693766"
+                }
+            ]
+        };
+        $(document).ready(function () {
+            for (i = 0; i < json.events.length; i++) {
+                // var divEvent = $(".content").append("<div class=\"event\">")
+                var divEvent = $("<div class=\"event\">")
+                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
+                eventLink.append("<h2>" + json.events[i].name + "</h2>")
+                eventLink.append("<img src=" + json.events[i].imageUrl + "/>")
+                eventLink.append("<p>DATE</p>")
+                divEvent.append(eventLink)
+                $(".content").append(divEvent)
+            }
+        });
+        $(window).scroll(function () {
+            console.log($(this).scrollTop())
+        });
+    </script>
 </head>
 
 <body>
     <header>
-        <h1 id="logo">Event Ranger</h1>
-        <form id="search">
+        <h1 class="logo">Event Ranger</h1>
+        <form class="search">
             <input type="text">
             <input type="button" value="Search">
         </form>
     </header>
-    <section>
+    <section class="title">
         <h1>Munich Events</h1>
-        <div>
-            <h2>Contact - The 5th experience</h2>
-            <img src="https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F46795221%2F158327981730%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=7ec8eaedd9c465a97632f7bc8b493d17" />
-            <a href="https://www.eventbrite.de/e/contact-the-5th-experience-tickets-40987882861" target="_blank">Find
-                out more</a>
-        </div>
-        <div>
-            <h2>Rave On Snow 2018</h2>
-            <img src="https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F43471641%2F252190799145%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C0%2C2160%2C1080&s=bda7a0baceff77e8cd7993792f42f22d" />
-            <a href="https://www.eventbrite.de/e/rave-on-snow-2018-tickets-45058693766" target="_blank">Find
-                out more</a>
-        </div>
-        <div>
-            <h2>IKARUS FESTIVAL - MMXIX</h2>
-            <img src="https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F51037585%2F181240506494%2F1%2Foriginal.jpg?w=800&auto=compress&rect=0%2C45%2C1920%2C960&s=2b2534be7be435bb6c36e0b103648a9f" />
-            <a href="https://www.eventbrite.de/e/ikarus-festival-mmxix-tickets-50119348320" target="_blank">Find
-                out more</a>
-        </div>
     </section>
+    <section class="content">
+    </section>
+    <footer>My Footer</footer>
 </body>
 
 </html>
