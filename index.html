@@ -70,7 +70,7 @@
             align-self: start;
             padding: 0.75em;
             margin-top: 1em;
-            transition: transform .2s  ease-in-out;
+            transition: transform .4s  ease-in-out;
         }
         .event img{
             width: 100%;
@@ -129,9 +129,9 @@
 
             $(".title").append("<h2>" + json.events.length + " events in December </h2>")
 
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < json.events.length; i++) {
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
-                eventLink.append("<img src=" + json.events[i].bannerImageUrl + "/>")
+                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
                 eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
 
                 var date = new Date(json.events[i].beginDateTimeUtc)
