@@ -16,6 +16,7 @@
             grid-template-areas: 
             "header header"
             "title title"
+            "categories categories"
             "content content"
             "page-navigation page-navigation"
             "footer footer";
@@ -59,6 +60,35 @@
             font-size: 20px;
             text-transform: uppercase;
         }
+
+        .categories {
+            grid-area: categories;
+            text-align: center;
+            padding-top: 1.5em;
+        }
+
+        .categories button {
+            border: none;
+            border-radius: .5em;
+            background-color: #e3eff2;
+            /* background-size: 200% auto; */
+            /* background-image: linear-gradient(to right, #216773 0%, #344A37 51%, #344A37 100%); */
+            color: #578e99;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+            display: inline-block;
+            margin-left: .3em;
+        }
+
+        .categories button.active {
+            background-color: #578e99;
+            color: #f9feff;
+
+        }
+
         .content{
             grid-area: content;
             display: grid;
@@ -108,6 +138,7 @@
                 grid-template-areas: 
                 "header header header header"
                 "title title title title "
+                ". categories categories . "
                 ". content content . "
                 ". page-navigation page-navigation . "
                 "footer footer footer footer";
@@ -162,6 +193,11 @@
                 $(".content").append(divEvent)
             }
             eventIndex = eventIndex + eventLimit
+
+            $(".categories button").click(function () {
+                $(".active").removeClass("active")
+                $(this).addClass("active")
+            });
         });
 
         function loadEvents() {
@@ -202,6 +238,16 @@
         <h2 class="header-title">Munich Events</h2>
     </header>
     <section class="title">
+    </section>
+    <section class="categories">
+        <button class="active">All</button>
+        <button>Weekend</button>
+        <button>Christmass</button>
+        <button>Music</button>
+        <button>Theater</button>
+        <button>Trainings</button>
+        <button>Sport</button>
+        <button>More ...</button>
     </section>
     <section class="content">
     </section>
