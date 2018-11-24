@@ -17,6 +17,7 @@
             "header header"
             "title title"
             "content content"
+            "page-navigation page-navigation"
             "footer footer";
             background-color: #FCFCFC;
         }
@@ -65,6 +66,11 @@
             padding-top: 1em;
         }
 
+        .page-navigation {
+            grid-area: page-navigation;
+            padding-top: 1em;
+        }
+
 /* Evetn Styles */
         .event{
             align-self: start;
@@ -103,6 +109,7 @@
                 "header header header header"
                 "title title title title "
                 ". content content . "
+                ". page-navigation page-navigation . "
                 "footer footer footer footer";
             }
 
@@ -125,11 +132,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="munich-december-events.js"></script>
     <script type="text/javascript">
+        var eventIndex = 0
+        var eventLimit = 16
+
         $(document).ready(function () {
 
             $(".title").append("<h2>" + json.events.length + " events in December </h2>")
 
-            for (i = 0; i < json.events.length; i++) {
+            for (i = eventIndex; i < (eventIndex + eventLimit); i++) {
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
                 eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
                 eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
@@ -151,7 +161,35 @@
 
                 $(".content").append(divEvent)
             }
+            eventIndex = eventIndex + eventLimit
         });
+
+        function loadEvents() {
+            for (i = eventIndex; i < (eventIndex + eventLimit); i++) {
+                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
+                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
+                eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
+
+                var date = new Date(json.events[i].beginDateTimeUtc)
+
+                var dateHours = date.getHours()
+                var dateHoursStr = "00"
+                if (dateHours > 0) { dateHoursStr = dateHours }
+
+                var dateMinutes = date.getMinutes()
+                var dateMinutesStr = "00"
+                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
+
+                var divEvent = $("<div class=\"event\">")
+                divEvent.append(eventLink)
+
+                $(".content").append(divEvent)
+            }
+            eventIndex = eventIndex + eventLimit
+        };
+
         $(window).scroll(function () {
             console.log($(this).scrollTop())
         });
@@ -164,11 +202,13 @@
         <h2 class="header-title">Munich Events</h2>
     </header>
     <section class="title">
-        <!-- <h1>Munich December Events</h1> -->
     </section>
     <section class="content">
     </section>
-    <footer>My Footer</footer>
+    <section class="page-navigation">
+        <button onclick="loadEvents()">LOAD MORE</button>
+    </section>
+    <footer>Event Ranger</footer>
 </body>
 
 </html>
