@@ -18,7 +18,6 @@
             "title title"
             "categories categories"
             "content content"
-            "page-navigation page-navigation"
             "footer footer";
             background-color: #FCFCFC;
         }
@@ -144,7 +143,6 @@
                 "title title title title "
                 ". categories categories . "
                 ". content content . "
-                ". page-navigation page-navigation . "
                 "footer footer footer footer";
             }
 
@@ -202,9 +200,6 @@
                 $(this).addClass("active")
             });
         });
-        $(window).scroll(function () {
-            console.log($(this).scrollTop())
-        });
     </script>
 </head>
 
@@ -224,9 +219,6 @@
         <div id="all" class="category-group"></div>
         <div id="weekend" class="category-group"></div>
     </section>
-    <section class="page-navigation">
-        <button onclick="loadMoreEvents()">LOAD MORE</button>
-    </section>
     <footer>Event Ranger</footer>
 
     <script type="text/javascript">
@@ -243,7 +235,6 @@
                 }
             }
         });
-
 
         var eventIndex = 16
         var eventLimit = 16
@@ -310,6 +301,13 @@
         function loadMoreEvents() {
             if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents();
         };
+
+
+        $(window).scroll(function () {
+            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+                loadMoreEvents()
+            }
+        });
     </script>
 </body>
 
