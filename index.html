@@ -64,6 +64,41 @@
             grid-area: categories;
             text-align: center;
             padding-top: 1.5em;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-areas: 
+            "scrollingLogo allBtn weekendBtn moreCategoriesBtn scrollingTitle";
+        }
+
+        .categories .scrollingLogo {
+            grid-area: scrollingLogo;
+            text-transform: uppercase;
+            color: #344A37;
+            letter-spacing: 0.5em;
+            font-size: 20px;
+        }
+        .categories .allBtn {
+            grid-area: allBtn;
+            text-transform: uppercase;
+            margin-left: 1.5em;
+        }
+        .categories .weekendBtn {
+            grid-area: weekendBtn;
+            margin-left: 1.5em;
+            text-transform: uppercase;
+        }
+        .categories .moreCategoriesBtn {
+            grid-area: moreCategoriesBtn;
+            margin-left: 1.5em;
+            text-transform: uppercase;
+        }
+        .categories .scrollingTitle {
+            grid-area: scrollingTitle;
+            text-transform: uppercase;
+            color: #344A37;
+            text-align: left;
+            padding-left: 1.5em;
+            font-size: 18px;
         }
 
         .sticky {
@@ -196,6 +231,8 @@
             }
 
             $("#weekend").hide()
+            $(".scrollingLogo").hide()
+            $(".scrollingTitle").hide()
 
             $(".categories button").click(function () {
                 $(".active").removeClass("active")
@@ -213,9 +250,11 @@
     <section class="title">
     </section>
     <section class="categories">
-        <button class="active" onclick="loadEvents()">All</button>
-        <button onclick="loadWeekedEvents()">Weekend</button>
-        <button>More Categories</button>
+        <h1 class="scrollingLogo">Event Ranger</h1>
+        <button class="active allBtn" onclick="loadEvents()">All</button>
+        <button class="weekendBtn" onclick="loadWeekedEvents()">Weekend</button>
+        <button class="moreCategoriesBtn">More Categories</button>
+        <h2 class="scrollingTitle">Munich Events</h2>
     </section>
     <section class="content">
         <div id="all" class="category-group"></div>
@@ -308,8 +347,12 @@
         $(window).scroll(function () {
             if ($(window).scrollTop() > ($("header").height() + $(".title").height() + 20)) {
                 $(".categories").addClass("sticky")
+                $(".scrollingLogo").show()
+                $(".scrollingTitle").show()
             } else {
                 $(".categories").removeClass("sticky")
+                $(".scrollingLogo").hide()
+                $(".scrollingTitle").hide()
             }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 loadMoreEvents()
