@@ -66,6 +66,14 @@
             padding-top: 1.5em;
         }
 
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #FCFCFC;
+            padding: 1.5em;
+        }
+
         .categories button {
             border: none;
             border-radius: .5em;
@@ -304,6 +312,11 @@
 
 
         $(window).scroll(function () {
+            if ($(window).scrollTop() > 200) {
+                $(".categories").addClass("sticky")
+            } else {
+                $(".categories").removeClass("sticky")
+            }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 loadMoreEvents()
             }
