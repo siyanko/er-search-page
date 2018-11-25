@@ -161,12 +161,6 @@
             .content .category-group{
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
-
-            .event:hover{
-                transform: scale(1.3);
-                background-color: #FFFFFF;
-                padding: 1em;
-            }
         }
 
     </style>
@@ -312,7 +306,7 @@
 
 
         $(window).scroll(function () {
-            if ($(window).scrollTop() > 200) {
+            if ($(window).scrollTop() > ($("header").height() + $(".title").height() + 20)) {
                 $(".categories").addClass("sticky")
             } else {
                 $(".categories").removeClass("sticky")
