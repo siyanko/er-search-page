@@ -91,6 +91,9 @@
 
         .content{
             grid-area: content;
+        }
+
+        .content .category-group {
             display: grid;
             grid-template-columns: 1fr;
             padding-top: 1em;
@@ -148,7 +151,7 @@
                 font-size: 30px;
             }
 
-            .content{
+            .content .category-group{
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
 
@@ -163,14 +166,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="munich-december-events.js"></script>
     <script type="text/javascript">
-        var eventIndex = 0
-        var eventLimit = 16
-
+        var currentCategory = "all"
         $(document).ready(function () {
 
             $(".title").append("<h2>" + json.events.length + " events in December </h2>")
 
-            for (i = eventIndex; i < (eventIndex + eventLimit); i++) {
+            for (i = 0; i < 16; i++) {
                 var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
                 eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
                 eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
@@ -190,42 +191,16 @@
                 var divEvent = $("<div class=\"event\">")
                 divEvent.append(eventLink)
 
-                $(".content").append(divEvent)
+                $("#all").append(divEvent)
             }
-            eventIndex = eventIndex + eventLimit
+
+            $("#weekend").hide()
 
             $(".categories button").click(function () {
                 $(".active").removeClass("active")
                 $(this).addClass("active")
             });
         });
-
-        function loadEvents() {
-            for (i = eventIndex; i < (eventIndex + eventLimit); i++) {
-                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
-                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
-                eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
-
-                var date = new Date(json.events[i].beginDateTimeUtc)
-
-                var dateHours = date.getHours()
-                var dateHoursStr = "00"
-                if (dateHours > 0) { dateHoursStr = dateHours }
-
-                var dateMinutes = date.getMinutes()
-                var dateMinutesStr = "00"
-                if (dateMinutes > 0) dateMinutesStr = dateMinutes
-
-                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
-
-                var divEvent = $("<div class=\"event\">")
-                divEvent.append(eventLink)
-
-                $(".content").append(divEvent)
-            }
-            eventIndex = eventIndex + eventLimit
-        };
-
         $(window).scroll(function () {
             console.log($(this).scrollTop())
         });
@@ -240,8 +215,8 @@
     <section class="title">
     </section>
     <section class="categories">
-        <button class="active">All</button>
-        <button>Weekend</button>
+        <button class="active" onclick="loadEvents()">All</button>
+        <button onclick="loadWeekedEvents()">Weekend</button>
         <button>Christmass</button>
         <button>Music</button>
         <button>Theater</button>
@@ -250,11 +225,96 @@
         <button>More ...</button>
     </section>
     <section class="content">
+        <div id="all" class="category-group"></div>
+        <div id="weekend" class="category-group"></div>
     </section>
     <section class="page-navigation">
-        <button onclick="loadEvents()">LOAD MORE</button>
+        <button onclick="loadMoreEvents()">LOAD MORE</button>
     </section>
     <footer>Event Ranger</footer>
+
+    <script type="text/javascript">
+        var weekendEvents = [];
+        $(document).ready(function () {
+            var weekendEventIndex = 0
+            var today = new Date()
+            for (i = 0; i < json.events.length; i++) {
+                var date = new Date(json.events[i].beginDateTimeUtc)
+                if (date >= today &&
+                    (date.getDay() === 5 || date.getDay() === 6)) {
+                    weekendEvents[weekendEventIndex] = json.events[i]
+                    weekendEventIndex = weekendEventIndex + 1
+                }
+            }
+        });
+
+
+        var eventIndex = 16
+        var eventLimit = 16
+
+        function loadEvents() {
+            currentCategory = "all";
+            $("#weekend").hide()
+            $("#all").show()
+            for (i = eventIndex; i < (eventIndex + eventLimit) && i < json.events.length; i++) {
+                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
+                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
+                eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
+
+                var date = new Date(json.events[i].beginDateTimeUtc)
+
+                var dateHours = date.getHours()
+                var dateHoursStr = "00"
+                if (dateHours > 0) { dateHoursStr = dateHours }
+
+                var dateMinutes = date.getMinutes()
+                var dateMinutesStr = "00"
+                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
+
+                var divEvent = $("<div class=\"event\">")
+                divEvent.append(eventLink)
+
+                $("#all").append(divEvent)
+            }
+            eventIndex = eventIndex + eventLimit
+        };
+
+        var weekendEventIndex = 0
+        function loadWeekedEvents() {
+            currentCategory = "weekend";
+            $("#all").hide()
+            $("#weekend").show()
+            for (i = weekendEventIndex; i < (weekendEventIndex + eventLimit) && i < weekendEvents.length; i++) {
+                var date = new Date(weekendEvents[i].beginDateTimeUtc)
+
+                var eventLink = $("<a href=" + weekendEvents[i].originUrl + " target=\"_blank\">")
+                eventLink.append("<img src=" + weekendEvents[i].bannerImageUrl + " >")
+                eventLink.append("<h2>" + weekendEvents[i].eventName + "</h2>")
+
+                var dateHours = date.getHours()
+                var dateHoursStr = "00"
+                if (dateHours > 0) { dateHoursStr = dateHours }
+
+                var dateMinutes = date.getMinutes()
+                var dateMinutesStr = "00"
+                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
+
+                var divEvent = $("<div class=\"event\">")
+                divEvent.append(eventLink)
+
+                $("#weekend").append(divEvent)
+            }
+            weekendEventIndex = weekendEventIndex + eventLimit
+        };
+
+        function loadMoreEvents() {
+            if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents();
+        };
+    </script>
 </body>
 
 </html>
