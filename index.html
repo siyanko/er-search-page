@@ -203,7 +203,8 @@
     <script type="text/javascript" src="munich-december-events.js"></script>
     <script type="text/javascript">
         var currentCategory = "all"
-        $(document).ready(function () {
+        var eventCount = 0
+        function loadEvents(beginCount) {
             $.ajax({
                 url: "http://localhost:9200/events/_search",
                 type: "POST",
@@ -213,25 +214,32 @@
                         "range": {
                             "beginDateUtc": {
                                 "gte": "now/d",
-                                "lte": "now+1d/d"
+                                "lte": "now+30d/d"
                             }
                         }
                     },
                     "sort": [
                         { "beginDateUtc": { "order": "asc" } }
                     ],
-                    "from": 0,
+                    "from": beginCount,
                     "size": 16
                 }),
                 success: function (data, status, jQxhr) {
-                    var events = data.hits.hits
-                    console.log(events[0]._source.beginDateUtc)
+                    var events = data.hits.hits;
                     for (i = 0; i < events.length; i++) {
                         var currentItem = events[i]._source
                         var date = new Date(currentItem.beginDateUtc)
                         var eventLink = $("<a href=" + currentItem.originUrl + " target=\"_blank\">")
-                        eventLink.append("<img src=" + currentItem.logoUrl + " >")
-                        eventLink.append("<h2>" + currentItem.eventName + "</h2>")
+                        if (typeof currentItem.logoUrl !== 'undefined') {
+                            eventLink.append("<img src=" + currentItem.logoUrl + " >")
+                        }
+                        var eventName = ""
+                        if(currentItem.eventName.length > 60) {
+                            eventName = currentItem.eventName.substring(0, 60) + "...";
+                        } else {
+                            eventName = currentItem.eventName;
+                        }
+                        eventLink.append("<h2>" + eventName + "</h2>")
 
 
                         var dateHours = date.getHours()
@@ -248,13 +256,18 @@
                         divEvent.append(eventLink)
 
                         $("#all").append(divEvent)
+                        eventCount = eventCount + 1;
                     }
+
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     console.log(errorThrown);
                 }
             });
+        };
 
+        $(document).ready(function () {
+            loadEvents(0);
 
             $(".title").append("<h2>Munich Events</h2>")
 
@@ -279,7 +292,7 @@
     </section>
     <section class="categories">
         <h1 class="scrollingLogo">Event Ranger</h1>
-        <button class="active allBtn" onclick="loadEvents()">All</button>
+        <button class="active allBtn" onclick="showAllEvents()">All</button>
         <button class="weekendBtn" onclick="loadWeekedEvents()">Weekend</button>
         <button class="customDatesBtn">Custom Dates</button>
         <h2 class="scrollingTitle">Munich Events</h2>
@@ -307,33 +320,11 @@
         var eventIndex = 16
         var eventLimit = 16
 
-        function loadEvents() {
+        function showAllEvents(){
             currentCategory = "all";
             $("#weekend").hide()
             $("#all").show()
-            for (i = eventIndex; i < (eventIndex + eventLimit) && i < json.events.length; i++) {
-                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
-                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
-                eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
-
-                var date = new Date(json.events[i].beginDateTimeUtc)
-
-                var dateHours = date.getHours()
-                var dateHoursStr = "00"
-                if (dateHours > 0) { dateHoursStr = dateHours }
-
-                var dateMinutes = date.getMinutes()
-                var dateMinutesStr = "00"
-                if (dateMinutes > 0) dateMinutesStr = dateMinutes
-
-                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
-
-                var divEvent = $("<div class=\"event\">")
-                divEvent.append(eventLink)
-
-                $("#all").append(divEvent)
-            }
-            eventIndex = eventIndex + eventLimit
+            loadEvents(eventCount);
         };
 
         var weekendEventIndex = 0
@@ -366,11 +357,6 @@
             weekendEventIndex = weekendEventIndex + eventLimit
         };
 
-        function loadMoreEvents() {
-            if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents();
-        };
-
-
         $(window).scroll(function () {
             if ($(window).scrollTop() > ($("header").height() + $(".title").height() + 20)) {
                 $(".categories").addClass("sticky")
@@ -382,7 +368,7 @@
                 $(".scrollingTitle").hide()
             }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                loadMoreEvents()
+                if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents(eventCount);
             }
         });
     </script>
