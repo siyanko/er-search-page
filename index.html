@@ -67,7 +67,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             grid-template-areas: 
-            "scrollingLogo allBtn weekendBtn moreCategoriesBtn scrollingTitle";
+            "scrollingLogo allBtn weekendBtn customDatesBtn scrollingTitle";
         }
 
         .categories .scrollingLogo {
@@ -87,8 +87,8 @@
             margin-left: 1.5em;
             text-transform: uppercase;
         }
-        .categories .moreCategoriesBtn {
-            grid-area: moreCategoriesBtn;
+        .categories .customDatesBtn {
+            grid-area: customDatesBtn;
             margin-left: 1.5em;
             text-transform: uppercase;
         }
@@ -204,31 +204,59 @@
     <script type="text/javascript">
         var currentCategory = "all"
         $(document).ready(function () {
+            $.ajax({
+                url: "http://localhost:9200/events/_search",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "query": {
+                        "range": {
+                            "beginDateUtc": {
+                                "gte": "now/d",
+                                "lte": "now+1d/d"
+                            }
+                        }
+                    },
+                    "sort": [
+                        { "beginDateUtc": { "order": "asc" } }
+                    ],
+                    "from": 0,
+                    "size": 16
+                }),
+                success: function (data, status, jQxhr) {
+                    var events = data.hits.hits
+                    console.log(events[0]._source.beginDateUtc)
+                    for (i = 0; i < events.length; i++) {
+                        var currentItem = events[i]._source
+                        var date = new Date(currentItem.beginDateUtc)
+                        var eventLink = $("<a href=" + currentItem.originUrl + " target=\"_blank\">")
+                        eventLink.append("<img src=" + currentItem.logoUrl + " >")
+                        eventLink.append("<h2>" + currentItem.eventName + "</h2>")
 
-            $(".title").append("<h2>" + json.events.length + " events in December </h2>")
 
-            for (i = 0; i < 16; i++) {
-                var eventLink = $("<a href=" + json.events[i].originUrl + " target=\"_blank\">")
-                eventLink.append("<img src=" + json.events[i].bannerImageUrl + " >")
-                eventLink.append("<h2>" + json.events[i].eventName + "</h2>")
+                        var dateHours = date.getHours()
+                        var dateHoursStr = "00"
+                        if (dateHours > 0) { dateHoursStr = dateHours }
 
-                var date = new Date(json.events[i].beginDateTimeUtc)
+                        var dateMinutes = date.getMinutes()
+                        var dateMinutesStr = "00"
+                        if (dateMinutes > 0) dateMinutesStr = dateMinutes
 
-                var dateHours = date.getHours()
-                var dateHoursStr = "00"
-                if (dateHours > 0) { dateHoursStr = dateHours }
+                        eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
 
-                var dateMinutes = date.getMinutes()
-                var dateMinutesStr = "00"
-                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+                        var divEvent = $("<div class=\"event\">")
+                        divEvent.append(eventLink)
 
-                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
+                        $("#all").append(divEvent)
+                    }
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
 
-                var divEvent = $("<div class=\"event\">")
-                divEvent.append(eventLink)
 
-                $("#all").append(divEvent)
-            }
+            $(".title").append("<h2>Munich Events</h2>")
 
             $("#weekend").hide()
             $(".scrollingLogo").hide()
@@ -253,7 +281,7 @@
         <h1 class="scrollingLogo">Event Ranger</h1>
         <button class="active allBtn" onclick="loadEvents()">All</button>
         <button class="weekendBtn" onclick="loadWeekedEvents()">Weekend</button>
-        <button class="moreCategoriesBtn">More Categories</button>
+        <button class="customDatesBtn">Custom Dates</button>
         <h2 class="scrollingTitle">Munich Events</h2>
     </section>
     <section class="content">
@@ -261,7 +289,6 @@
         <div id="weekend" class="category-group"></div>
     </section>
     <footer>Event Ranger</footer>
-
     <script type="text/javascript">
         var weekendEvents = [];
         $(document).ready(function () {
