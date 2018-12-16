@@ -203,12 +203,10 @@
     <script type="text/javascript" src="munich-december-events.js"></script>
     <script type="text/javascript">
         var currentCategory = "all"
-        var eventCount = 0
+        var allEventsCount = 0
         var today = new Date();
-        function loadEvents(beginCount, fromDate, toDate) {
+        function loadEvents(contentTag, beginCount, fromDate, toDate) {
             var dateRangeCondition = null;
-            console.log(fromDate)
-            console.log(toDate)
             if (typeof fromDate !== 'undefined' && typeof toDate !== 'undefined') {
                 dateRangeCondition = {
                     "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
@@ -269,8 +267,7 @@
                         var divEvent = $("<div class=\"event\">")
                         divEvent.append(eventLink)
 
-                        $("#all").append(divEvent)
-                        eventCount = eventCount + 1;
+                        $(contentTag).append(divEvent)
                     }
 
                 },
@@ -281,11 +278,12 @@
         };
 
         $(document).ready(function () {
-            loadEvents(0, today);
+            loadEvents("#all", 0, today);
 
             $(".title").append("<h2>Munich Events</h2>")
 
             $("#weekend").hide()
+            $("#customDates").hide()
             $(".scrollingLogo").hide()
             $(".scrollingTitle").hide()
 
@@ -308,12 +306,13 @@
         <h1 class="scrollingLogo">Event Ranger</h1>
         <button class="active allBtn" onclick="showAllEvents()">All</button>
         <button class="weekendBtn" onclick="loadWeekedEvents()">Weekend</button>
-        <button class="customDatesBtn">Custom Dates</button>
+        <button class="customDatesBtn" onclick="showCustomDates()">Custom Dates</button>
         <h2 class="scrollingTitle">Munich Events</h2>
     </section>
     <section class="content">
         <div id="all" class="category-group"></div>
         <div id="weekend" class="category-group"></div>
+        <div id="customDates" class="category-group"></div>
     </section>
     <footer>Event Ranger</footer>
     <script type="text/javascript">
@@ -337,15 +336,28 @@
         function showAllEvents() {
             currentCategory = "all";
             $("#weekend").hide()
+            $("#customDates").hide()
             $("#all").show()
-            loadEvents(eventCount, today);
+            loadEvents("#all", allEventsCount, today);
+            allEventsCount = allEventsCount + 16;
         };
+
+        var customDatesEventsCount = 0
+        function showCustomDates() {
+            currentCategory = "customDates";
+            $("#weekend").hide()
+            $("#all").hide()
+            $("#customDates").show()
+            loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
+            customDatesEventsCount = customDatesEventsCount + 16;
+        }
 
         var weekendEventIndex = 0
         function loadWeekedEvents() {
             currentCategory = "weekend";
             $("#all").hide()
             $("#weekend").show()
+            $("#customDates").hide()
             for (i = weekendEventIndex; i < (weekendEventIndex + eventLimit) && i < weekendEvents.length; i++) {
                 var date = new Date(weekendEvents[i].beginDateTimeUtc)
 
@@ -382,7 +394,15 @@
                 $(".scrollingTitle").hide()
             }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents(eventCount, today);
+                if (currentCategory === "weekend") loadWeekedEvents();
+                else if (currentCategory === "customDates") {
+                    loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
+                    customDatesEventsCount = customDatesEventsCount + 16;
+                }
+                else {
+                    loadEvents("#all", allEventsCount, today);
+                    allEventsCount = allEventsCount + 16;
+                }
             }
         });
     </script>
