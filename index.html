@@ -204,7 +204,8 @@
     <script type="text/javascript">
         var currentCategory = "all"
         var eventCount = 0
-        function loadEvents(beginCount) {
+        var today = new Date();
+        function loadEvents(beginCount, date) {
             $.ajax({
                 url: "http://localhost:9200/events/_search",
                 type: "POST",
@@ -213,8 +214,8 @@
                     "query": {
                         "range": {
                             "beginDateUtc": {
-                                "gte": "now/d",
-                                "lte": "now+30d/d"
+                                "gte": date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(),
+                                "format": "dd.MM.yyyy"
                             }
                         }
                     },
@@ -234,7 +235,7 @@
                             eventLink.append("<img src=" + currentItem.logoUrl + " >")
                         }
                         var eventName = ""
-                        if(currentItem.eventName.length > 60) {
+                        if (currentItem.eventName.length > 60) {
                             eventName = currentItem.eventName.substring(0, 60) + "...";
                         } else {
                             eventName = currentItem.eventName;
@@ -267,7 +268,7 @@
         };
 
         $(document).ready(function () {
-            loadEvents(0);
+            loadEvents(0, today);
 
             $(".title").append("<h2>Munich Events</h2>")
 
@@ -320,11 +321,11 @@
         var eventIndex = 16
         var eventLimit = 16
 
-        function showAllEvents(){
+        function showAllEvents() {
             currentCategory = "all";
             $("#weekend").hide()
             $("#all").show()
-            loadEvents(eventCount);
+            loadEvents(eventCount, today);
         };
 
         var weekendEventIndex = 0
@@ -368,7 +369,7 @@
                 $(".scrollingTitle").hide()
             }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents(eventCount);
+                if (currentCategory === "weekend") loadWeekedEvents(); else loadEvents(eventCount, today);
             }
         });
     </script>
