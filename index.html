@@ -205,7 +205,23 @@
         var currentCategory = "all"
         var eventCount = 0
         var today = new Date();
-        function loadEvents(beginCount, date) {
+        function loadEvents(beginCount, fromDate, toDate) {
+            var dateRangeCondition = null;
+            console.log(fromDate)
+            console.log(toDate)
+            if (typeof fromDate !== 'undefined' && typeof toDate !== 'undefined') {
+                dateRangeCondition = {
+                    "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
+                    "lte": toDate.getDate() + "." + (toDate.getMonth() + 1) + "." + toDate.getFullYear(),
+                    "format": "dd.MM.yyyy"
+                }
+            } else {
+                dateRangeCondition = {
+                    "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
+                    "format": "dd.MM.yyyy"
+                }
+            }
+
             $.ajax({
                 url: "http://localhost:9200/events/_search",
                 type: "POST",
@@ -213,10 +229,7 @@
                 data: JSON.stringify({
                     "query": {
                         "range": {
-                            "beginDateUtc": {
-                                "gte": date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(),
-                                "format": "dd.MM.yyyy"
-                            }
+                            "beginDateUtc": dateRangeCondition
                         }
                     },
                     "sort": [
