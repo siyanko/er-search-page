@@ -203,26 +203,64 @@
     <script type="text/javascript" src="munich-december-events.js"></script>
     <script type="text/javascript">
         var currentCategory = "all"
-        var allEventsCount = 0
-        var customDatesEventsCount = 0
-        var weekendEventsCount = 0
         var today = new Date();
 
+        // makes string date in dd.MM.yyyyy format
+        function mkFormatDateForSearch(date) {
+            return date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
+        }
+
         // creates elastic search date range query
-        function mkDateRangeCondition(fromDate, toDate){
+        function mkDateRangeCondition(fromDate, toDate) {
+            var dateFormat = "dd.MM.yyyy";
             if (typeof fromDate !== 'undefined' && typeof toDate !== 'undefined') {
                 return {
-                    "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
-                    "lte": toDate.getDate() + "." + (toDate.getMonth() + 1) + "." + toDate.getFullYear(),
-                    "format": "dd.MM.yyyy"
+                    "gte": mkFormatDateForSearch(fromDate),
+                    "lte": mkFormatDateForSearch(toDate),
+                    "format": dateFormat
                 };
             } else {
                 return {
-                    "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
-                    "format": "dd.MM.yyyy"
+                    "gte": mkFormatDateForSearch(fromDate),
+                    "format": dateFormat
                 };
             }
-        }
+        };
+
+        // appends events to the specific contentTag section of the page
+        function appendEventsToPage(contentTag, events) {
+            for (i = 0; i < events.length; i++) {
+                var currentItem = events[i]._source
+                var date = new Date(currentItem.beginDateUtc)
+                var eventLink = $("<a href=" + currentItem.originUrl + " target=\"_blank\">")
+                if (typeof currentItem.logoUrl !== 'undefined') {
+                    eventLink.append("<img src=" + currentItem.logoUrl + " >")
+                }
+                var eventName = ""
+                if (currentItem.eventName.length > 60) {
+                    eventName = currentItem.eventName.substring(0, 60) + "...";
+                } else {
+                    eventName = currentItem.eventName;
+                }
+                eventLink.append("<h2>" + eventName + "</h2>")
+
+
+                var dateHours = date.getHours()
+                var dateHoursStr = "00"
+                if (dateHours > 0) { dateHoursStr = dateHours }
+
+                var dateMinutes = date.getMinutes()
+                var dateMinutesStr = "00"
+                if (dateMinutes > 0) dateMinutesStr = dateMinutes
+
+                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
+
+                var divEvent = $("<div class=\"event\">")
+                divEvent.append(eventLink)
+
+                $(contentTag).append(divEvent)
+            }
+        };
 
         // makes call to the elastic search
         function loadEvents(contentTag, beginCount, fromDate, toDate) {
@@ -243,39 +281,7 @@
                     "size": 16
                 }),
                 success: function (data, status, jQxhr) {
-                    var events = data.hits.hits;
-                    for (i = 0; i < events.length; i++) {
-                        var currentItem = events[i]._source
-                        var date = new Date(currentItem.beginDateUtc)
-                        var eventLink = $("<a href=" + currentItem.originUrl + " target=\"_blank\">")
-                        if (typeof currentItem.logoUrl !== 'undefined') {
-                            eventLink.append("<img src=" + currentItem.logoUrl + " >")
-                        }
-                        var eventName = ""
-                        if (currentItem.eventName.length > 60) {
-                            eventName = currentItem.eventName.substring(0, 60) + "...";
-                        } else {
-                            eventName = currentItem.eventName;
-                        }
-                        eventLink.append("<h2>" + eventName + "</h2>")
-
-
-                        var dateHours = date.getHours()
-                        var dateHoursStr = "00"
-                        if (dateHours > 0) { dateHoursStr = dateHours }
-
-                        var dateMinutes = date.getMinutes()
-                        var dateMinutesStr = "00"
-                        if (dateMinutes > 0) dateMinutesStr = dateMinutes
-
-                        eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
-
-                        var divEvent = $("<div class=\"event\">")
-                        divEvent.append(eventLink)
-
-                        $(contentTag).append(divEvent)
-                    }
-
+                    appendEventsToPage(contentTag, data.hits.hits);
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     console.log(errorThrown);
@@ -283,6 +289,7 @@
             });
         };
 
+        var allEventsCount = 0
         function showAllEvents() {
             currentCategory = "all";
             $("#weekend").hide()
@@ -292,6 +299,7 @@
             allEventsCount = allEventsCount + 16;
         };
 
+        var customDatesEventsCount = 0
         function showCustomDates() {
             currentCategory = "customDates";
             $("#weekend").hide()
@@ -299,8 +307,9 @@
             $("#customDates").show()
             loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
             customDatesEventsCount = customDatesEventsCount + 16;
-        }
+        };
 
+        var weekendEventsCount = 0
         function showWeekedEvents() {
             currentCategory = "weekend";
             $("#all").hide()
@@ -347,7 +356,6 @@
     </section>
     <footer>Event Ranger</footer>
     <script type="text/javascript">
-
         $(window).scroll(function () {
             if ($(window).scrollTop() > ($("header").height() + $(".title").height() + 20)) {
                 $(".categories").addClass("sticky")
