@@ -204,22 +204,28 @@
     <script type="text/javascript">
         var currentCategory = "all"
         var allEventsCount = 0
+        var customDatesEventsCount = 0
+        var weekendEventsCount = 0
         var today = new Date();
-        function loadEvents(contentTag, beginCount, fromDate, toDate) {
-            var dateRangeCondition = null;
+
+        // creates elastic search date range query
+        function mkDateRangeCondition(fromDate, toDate){
             if (typeof fromDate !== 'undefined' && typeof toDate !== 'undefined') {
-                dateRangeCondition = {
+                return {
                     "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
                     "lte": toDate.getDate() + "." + (toDate.getMonth() + 1) + "." + toDate.getFullYear(),
                     "format": "dd.MM.yyyy"
-                }
+                };
             } else {
-                dateRangeCondition = {
+                return {
                     "gte": fromDate.getDate() + "." + (fromDate.getMonth() + 1) + "." + fromDate.getFullYear(),
                     "format": "dd.MM.yyyy"
-                }
+                };
             }
+        }
 
+        // makes call to the elastic search
+        function loadEvents(contentTag, beginCount, fromDate, toDate) {
             $.ajax({
                 url: "http://localhost:9200/events/_search",
                 type: "POST",
@@ -227,7 +233,7 @@
                 data: JSON.stringify({
                     "query": {
                         "range": {
-                            "beginDateUtc": dateRangeCondition
+                            "beginDateUtc": mkDateRangeCondition(fromDate, toDate)
                         }
                     },
                     "sort": [
@@ -277,13 +283,38 @@
             });
         };
 
+        function showAllEvents() {
+            currentCategory = "all";
+            $("#weekend").hide()
+            $("#customDates").hide()
+            $("#all").show()
+            loadEvents("#all", allEventsCount, today);
+            allEventsCount = allEventsCount + 16;
+        };
+
+        function showCustomDates() {
+            currentCategory = "customDates";
+            $("#weekend").hide()
+            $("#all").hide()
+            $("#customDates").show()
+            loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
+            customDatesEventsCount = customDatesEventsCount + 16;
+        }
+
+        function showWeekedEvents() {
+            currentCategory = "weekend";
+            $("#all").hide()
+            $("#customDates").hide()
+            $("#weekend").show()
+            loadEvents("#weekend", weekendEventsCount, new Date("2018-12-21"), new Date("2018-12-23"));
+            weekendEventsCount = weekendEventsCount + 16;
+        };
+
         $(document).ready(function () {
-            loadEvents("#all", 0, today);
+            showAllEvents();
 
             $(".title").append("<h2>Munich Events</h2>")
 
-            $("#weekend").hide()
-            $("#customDates").hide()
             $(".scrollingLogo").hide()
             $(".scrollingTitle").hide()
 
@@ -305,7 +336,7 @@
     <section class="categories">
         <h1 class="scrollingLogo">Event Ranger</h1>
         <button class="active allBtn" onclick="showAllEvents()">All</button>
-        <button class="weekendBtn" onclick="loadWeekedEvents()">Weekend</button>
+        <button class="weekendBtn" onclick="showWeekedEvents()">Weekend</button>
         <button class="customDatesBtn" onclick="showCustomDates()">Custom Dates</button>
         <h2 class="scrollingTitle">Munich Events</h2>
     </section>
@@ -316,72 +347,6 @@
     </section>
     <footer>Event Ranger</footer>
     <script type="text/javascript">
-        var weekendEvents = [];
-        $(document).ready(function () {
-            var weekendEventIndex = 0
-            var today = new Date()
-            for (i = 0; i < json.events.length; i++) {
-                var date = new Date(json.events[i].beginDateTimeUtc)
-                if (date >= today &&
-                    (date.getDay() === 5 || date.getDay() === 6)) {
-                    weekendEvents[weekendEventIndex] = json.events[i]
-                    weekendEventIndex = weekendEventIndex + 1
-                }
-            }
-        });
-
-        var eventIndex = 16
-        var eventLimit = 16
-
-        function showAllEvents() {
-            currentCategory = "all";
-            $("#weekend").hide()
-            $("#customDates").hide()
-            $("#all").show()
-            loadEvents("#all", allEventsCount, today);
-            allEventsCount = allEventsCount + 16;
-        };
-
-        var customDatesEventsCount = 0
-        function showCustomDates() {
-            currentCategory = "customDates";
-            $("#weekend").hide()
-            $("#all").hide()
-            $("#customDates").show()
-            loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
-            customDatesEventsCount = customDatesEventsCount + 16;
-        }
-
-        var weekendEventIndex = 0
-        function loadWeekedEvents() {
-            currentCategory = "weekend";
-            $("#all").hide()
-            $("#weekend").show()
-            $("#customDates").hide()
-            for (i = weekendEventIndex; i < (weekendEventIndex + eventLimit) && i < weekendEvents.length; i++) {
-                var date = new Date(weekendEvents[i].beginDateTimeUtc)
-
-                var eventLink = $("<a href=" + weekendEvents[i].originUrl + " target=\"_blank\">")
-                eventLink.append("<img src=" + weekendEvents[i].bannerImageUrl + " >")
-                eventLink.append("<h2>" + weekendEvents[i].eventName + "</h2>")
-
-                var dateHours = date.getHours()
-                var dateHoursStr = "00"
-                if (dateHours > 0) { dateHoursStr = dateHours }
-
-                var dateMinutes = date.getMinutes()
-                var dateMinutesStr = "00"
-                if (dateMinutes > 0) dateMinutesStr = dateMinutes
-
-                eventLink.append("<p style=\"padding-top: 1em; font-style: italic;\">" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + dateHoursStr + ":" + dateMinutesStr + "</p>")
-
-                var divEvent = $("<div class=\"event\">")
-                divEvent.append(eventLink)
-
-                $("#weekend").append(divEvent)
-            }
-            weekendEventIndex = weekendEventIndex + eventLimit
-        };
 
         $(window).scroll(function () {
             if ($(window).scrollTop() > ($("header").height() + $(".title").height() + 20)) {
@@ -394,15 +359,9 @@
                 $(".scrollingTitle").hide()
             }
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                if (currentCategory === "weekend") loadWeekedEvents();
-                else if (currentCategory === "customDates") {
-                    loadEvents("#customDates", customDatesEventsCount, new Date("2019-01-20"), new Date("2019-01-31"));
-                    customDatesEventsCount = customDatesEventsCount + 16;
-                }
-                else {
-                    loadEvents("#all", allEventsCount, today);
-                    allEventsCount = allEventsCount + 16;
-                }
+                if (currentCategory === "weekend") showWeekedEvents();
+                else if (currentCategory === "customDates") showCustomDates();
+                else showAllEvents();
             }
         });
     </script>
